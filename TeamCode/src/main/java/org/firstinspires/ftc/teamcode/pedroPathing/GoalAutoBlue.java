@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-@Autonomous(name = "GoalAutoRed")
-public class GoalAutoRed extends OpMode {
+@Autonomous(name = "GoalAutoBlue")
+public class GoalAutoBlue extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, opmodeTimer;
@@ -27,14 +27,14 @@ public class GoalAutoRed extends OpMode {
 
     private final double speed = 0.6;
 
-    private final Pose startPose = new Pose(110, 134, Math.toRadians(270));
-    private final Pose launchPose = new Pose(90, 107, Math.toRadians(211));
-    private final Pose startGrab1 = new Pose(92, 82, Math.toRadians(0));
-    private final Pose finishGrab1 = new Pose(115, 82, Math.toRadians(0));
-    private final Pose startGrab2 = new Pose(92, 58, Math.toRadians(0));
-    private final Pose finishGrab2 = new Pose(115, 58, Math.toRadians(0));
-    private final Pose controlPoint = new Pose (90, 75, Math.toRadians(105));
-    private final Pose finishPose = new Pose(100, 82, Math.toRadians(90));
+    private final Pose startPose = new Pose(34, 134, Math.toRadians(270));
+    private final Pose launchPose = new Pose(54, 107, Math.toRadians(328));
+    private final Pose startGrab1 = new Pose(52, 84, Math.toRadians(180));
+    private final Pose finishGrab1 = new Pose(29, 84, Math.toRadians(180));
+    private final Pose startGrab2 = new Pose(52, 60, Math.toRadians(180));
+    private final Pose finishGrab2 = new Pose(29, 60, Math.toRadians(180));
+    private final Pose controlPoint = new Pose (54, 75, Math.toRadians(75));
+    private final Pose finishPose = new Pose(44, 82, Math.toRadians(90));
 
     private PathChain launch1, toPickUp1, pickUp1, launch2, toPickUp2, pickUp2, launch3, leave;
 
@@ -249,7 +249,7 @@ public class GoalAutoRed extends OpMode {
     @Override
     public void stop() {
         PoseStorage.endingPose = follower.getPose();
-        PoseStorage.correctHeading = Math.toRadians(0);
+        PoseStorage.correctHeading = Math.toRadians(180);
         PoseStorage.launchPose = launchPose;
     }
 }

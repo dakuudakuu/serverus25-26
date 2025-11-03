@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @TeleOp(name = "MainTeleOp")
 public class MainTeleOp extends OpMode {
@@ -19,8 +19,9 @@ public class MainTeleOp extends OpMode {
     private DcMotor wheel1;
     private DcMotor wheel2;
     private DcMotor slides;
-    private final Pose launchPose = new Pose(90, 107, Math.toRadians(215.906));
+    private final Pose launchPose = PoseStorage.launchPose;
     private boolean returningFromPath = false;
+    private VoltageSensor voltageSensor;
     public double speed;
 
     @Override
@@ -29,6 +30,8 @@ public class MainTeleOp extends OpMode {
         follower.setStartingPose(PoseStorage.endingPose);
         follower.update();
         speed = 0.8;
+
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         rollers = hardwareMap.get(DcMotor.class, "rollers");
         wheel1 = hardwareMap.get(DcMotor.class, "wheel1");
@@ -93,28 +96,30 @@ public class MainTeleOp extends OpMode {
                     -gamepad1.left_stick_x * speed,
                     -gamepad1.right_stick_x * speed,
                     isRobotCentric,
-                    PoseStorage.endingPose.getHeading()
+                    PoseStorage.correctHeading
             );
         }
     }
 
     private void moveBalls() {
-        if(gamepad2.y) {
+        if(gamepad2.a) {
             rollers.setPower(0.9);
-            wheel1.setPower(0.65);
-            wheel2.setPower(-0.65);
+            wheel1.setPower(-0.9);
+            wheel2.setPower(0.9 );
+        } else if(gamepad2.dpad_up) {
+            wheel1.setPower(0.85 * (12 / voltageSensor.getVoltage()));
+            wheel2.setPower(-0.85 * (12 / voltageSensor.getVoltage()));
         } else if (gamepad2.x) {
             rollers.setPower(-0.5);
-            wheel1.setPower(-0.3);
-            wheel2.setPower(0.3);
-        } else if(gamepad2.a) {
-            rollers.setPower(0.9);
-            wheel1.setPower(-0.4);
-            wheel2.setPower(0.4);
+            wheel1.setPower(-0.5);
+            wheel2.setPower(0.5);
         } else {
             rollers.setPower(0);
             wheel1.setPower(0);
             wheel2.setPower(0);
+        }
+        if(gamepad2.y) {
+            rollers.setPower(0.7);
         }
     }
 
