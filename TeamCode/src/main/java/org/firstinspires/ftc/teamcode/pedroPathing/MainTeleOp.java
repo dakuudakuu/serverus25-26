@@ -7,6 +7,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @TeleOp(name = "MainTeleOp")
@@ -16,8 +17,8 @@ public class MainTeleOp extends OpMode {
     private boolean isRobotCentric = false;
     private boolean isRobotCentricPrev = false;
     private DcMotor rollers;
-    private DcMotor wheel1;
-    private DcMotor wheel2;
+    private DcMotorEx wheel1;
+    private DcMotorEx wheel2;
     private DcMotor slides;
     private final Pose launchPose = PoseStorage.launchPose;
     private boolean returningFromPath = false;
@@ -34,8 +35,13 @@ public class MainTeleOp extends OpMode {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         rollers = hardwareMap.get(DcMotor.class, "rollers");
-        wheel1 = hardwareMap.get(DcMotor.class, "wheel1");
-        wheel2 = hardwareMap.get(DcMotor.class, "wheel2");
+        rollers.setDirection(DcMotor.Direction.REVERSE);
+        wheel1 = hardwareMap.get(DcMotorEx.class, "wheel1");
+        wheel1.setDirection(DcMotorEx.Direction.REVERSE);
+        wheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        wheel2 = hardwareMap.get(DcMotorEx.class, "wheel2");
+        wheel2.setDirection(DcMotorEx.Direction.REVERSE);
+        wheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         slides = hardwareMap.get(DcMotor.class, "slides");
     }
 
@@ -105,10 +111,10 @@ public class MainTeleOp extends OpMode {
         if(gamepad2.a) {
             rollers.setPower(0.9);
             wheel1.setPower(-0.9);
-            wheel2.setPower(0.9 );
+            wheel2.setPower(0.9);
         } else if(gamepad2.dpad_up) {
-            wheel1.setPower(0.85 * (12 / voltageSensor.getVoltage()));
-            wheel2.setPower(-0.85 * (12 / voltageSensor.getVoltage()));
+            wheel1.setVelocity(3000);
+            wheel2.setVelocity(-3000);
         } else if (gamepad2.x) {
             rollers.setPower(-0.5);
             wheel1.setPower(-0.5);

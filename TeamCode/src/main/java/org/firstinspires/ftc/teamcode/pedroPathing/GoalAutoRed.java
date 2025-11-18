@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @Autonomous(name = "GoalAutoRed")
@@ -20,12 +21,12 @@ public class GoalAutoRed extends OpMode {
     private int pathState;
 
     private DcMotorEx rollers;
-    private DcMotor wheel1;
-    private DcMotor wheel2;
+    private DcMotorEx wheel1;
+    private DcMotorEx wheel2;
 
     private VoltageSensor voltageSensor;
 
-    private final double speed = 0.6;
+    private final double speed = 1;
 
     private final Pose startPose = new Pose(110, 134, Math.toRadians(270));
     private final Pose launchPose = new Pose(90, 107, Math.toRadians(211));
@@ -90,8 +91,15 @@ public class GoalAutoRed extends OpMode {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         rollers = hardwareMap.get(DcMotorEx.class, "rollers");
         rollers.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        wheel1 = hardwareMap.get(DcMotor.class, "wheel1");
-        wheel2 = hardwareMap.get(DcMotor.class, "wheel2");
+        rollers.setDirection(DcMotorEx.Direction.REVERSE);
+        PIDFCoefficients rollerPID = new PIDFCoefficients(20.0, 0, 1.0, 12.0);
+        rollers.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, rollerPID);
+        wheel1 = hardwareMap.get(DcMotorEx.class, "wheel1");
+        wheel1.setDirection(DcMotorEx.Direction.REVERSE);
+        wheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        wheel2 = hardwareMap.get(DcMotorEx.class, "wheel2");
+        wheel2.setDirection(DcMotorEx.Direction.REVERSE);
+        wheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     public void pathUpdate() {
@@ -213,8 +221,8 @@ public class GoalAutoRed extends OpMode {
     }
 
     public void startWheels() {
-        wheel1.setPower(0.9 * (12 / voltageSensor.getVoltage()));
-        wheel2.setPower(-0.9 * (12 / voltageSensor.getVoltage()));
+        wheel1.setVelocity(2500);
+        wheel2.setVelocity(-2500);
     }
 
     public void stopWheels() {
@@ -223,8 +231,8 @@ public class GoalAutoRed extends OpMode {
     }
 
     public void reverseWheels() {
-        wheel1.setPower(-1 * (12 / voltageSensor.getVoltage()));
-        wheel2.setPower(1 * (12 / voltageSensor.getVoltage()));
+        wheel1.setPower(-1);
+        wheel2.setPower(-1);
     }
 
     public void startRollersLaunch() {
