@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @TeleOp(name = "MainTeleOp")
@@ -16,13 +18,14 @@ public class MainTeleOp extends OpMode {
     private Follower follower;
     private boolean isRobotCentric = false;
     private boolean isRobotCentricPrev = false;
-    private DcMotor rollers;
+    private DcMotorEx rollers;
     private DcMotorEx wheel1;
     private DcMotorEx wheel2;
     private DcMotor slides;
+    private Servo gate0;
+    private Servo gate1;
     private final Pose launchPose = PoseStorage.launchPose;
     private boolean returningFromPath = false;
-    private VoltageSensor voltageSensor;
     public double speed;
 
     @Override
@@ -32,16 +35,23 @@ public class MainTeleOp extends OpMode {
         follower.update();
         speed = 0.8;
 
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
-
-        rollers = hardwareMap.get(DcMotor.class, "rollers");
-        rollers.setDirection(DcMotor.Direction.REVERSE);
+        rollers = hardwareMap.get(DcMotorEx.class, "rollers");
+        rollers.setDirection(DcMotorEx.Direction.REVERSE);
+        rollers.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients rollerPID = new PIDFCoefficients(20.0, 0, 1.0, 12.0);
+        rollers.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, rollerPID);
         wheel1 = hardwareMap.get(DcMotorEx.class, "wheel1");
         wheel1.setDirection(DcMotorEx.Direction.REVERSE);
         wheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         wheel2 = hardwareMap.get(DcMotorEx.class, "wheel2");
         wheel2.setDirection(DcMotorEx.Direction.REVERSE);
         wheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        gate0 = hardwareMap.get(Servo.class, "gate0");
+        gate0.setDirection(Servo.Direction.FORWARD);
+        gate1 = hardwareMap.get(Servo.class, "gate1");
+        gate1.setDirection(Servo.Direction.REVERSE);
+
         slides = hardwareMap.get(DcMotor.class, "slides");
     }
 
@@ -110,22 +120,19 @@ public class MainTeleOp extends OpMode {
     private void moveBalls() {
         if(gamepad2.a) {
             rollers.setPower(0.9);
-            wheel1.setPower(-0.9);
-            wheel2.setPower(0.9);
-        } else if(gamepad2.dpad_up) {
-            wheel1.setVelocity(3000);
-            wheel2.setVelocity(-3000);
-        } else if (gamepad2.x) {
-            rollers.setPower(-0.5);
-            wheel1.setPower(-0.5);
-            wheel2.setPower(0.5);
+            gate0.setPosition(0);
+            gate1.setPosition(0);
+        } else if(gamepad2.y) {
+            rollers.setVelocity(500);
+            gate0.setPosition(1);
+            gate1.setPosition(1);
         } else {
             rollers.setPower(0);
-            wheel1.setPower(0);
-            wheel2.setPower(0);
-        }
-        if(gamepad2.y) {
-            rollers.setPower(0.7);
+            gate0.setPosition(0);
+            gate1.setPosition(0);
+        } if (gamepad2.dpad_up) {
+            wheel1.setVelocity(2500);
+            wheel2.setVelocity(-2500);
         }
     }
 

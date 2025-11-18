@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @Autonomous(name = "GoalAutoBlue")
@@ -23,9 +25,14 @@ public class GoalAutoBlue extends OpMode {
     private DcMotorEx wheel1;
     private DcMotorEx wheel2;
 
+    private Servo gate0;
+    private Servo gate1;
+
     private VoltageSensor voltageSensor;
 
     private final double speed = 1;
+
+    private boolean gateUp = true;
 
     private final Pose startPose = new Pose(34, 134, Math.toRadians(270));
     private final Pose launchPose = new Pose(54, 107, Math.toRadians(328));
@@ -90,29 +97,39 @@ public class GoalAutoBlue extends OpMode {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         rollers = hardwareMap.get(DcMotorEx.class, "rollers");
         rollers.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rollers.setDirection(DcMotorEx.Direction.REVERSE);
+        PIDFCoefficients rollerPID = new PIDFCoefficients(20.0, 0, 1.0, 12.0);
+        rollers.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, rollerPID);
         wheel1 = hardwareMap.get(DcMotorEx.class, "wheel1");
         wheel1.setDirection(DcMotorEx.Direction.REVERSE);
         wheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         wheel2 = hardwareMap.get(DcMotorEx.class, "wheel2");
         wheel2.setDirection(DcMotorEx.Direction.REVERSE);
         wheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        gate0 = hardwareMap.get(Servo.class, "gate0");
+        gate0.setDirection(Servo.Direction.FORWARD);
+        gate1 = hardwareMap.get(Servo.class, "gate1");
+        gate1.setDirection(Servo.Direction.REVERSE);
     }
 
     public void pathUpdate() {
         switch(pathState) {
             case 0:
                 startWheels();
+                raiseGate();
                 follower.followPath(launch1, speed, true);
                 setPathState(1);
                 break;
             case 1:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5 & !follower.isBusy()) {
+                if(pathTimer.getElapsedTimeSeconds() > 2 & !follower.isBusy()) {
+                    lowerGate();
                     startRollersLaunch();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 1.25) {
+                    raiseGate();
                     stopWheels();
                     stopRollers();
                     follower.followPath(toPickUp1, speed, false);
@@ -122,76 +139,66 @@ public class GoalAutoBlue extends OpMode {
             case 3:
                 if(!follower.isBusy()) {
                     startRollersPickup();
-                    reverseWheels();
                     follower.followPath(pickUp1, speed, false);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 2) {
-                    reverseRollers();
+                if(!follower.isBusy()) {
+                    stopRollers();
+                    startWheels();
+                    follower.followPath(launch2, speed, true);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if(pathTimer.getElapsedTime() > 350) {
-                    stopRollers();
-                    startWheels();
-                    follower.followPath(launch2, speed, true);
+                if(pathTimer.getElapsedTimeSeconds() > 2.5 & !follower.isBusy()) {
+                    lowerGate();
+                    startRollersLaunch();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5 & !follower.isBusy()) {
-                    startRollersLaunch();
+                if(pathTimer.getElapsedTimeSeconds() > 1.25) {
+                    raiseGate();
+                    stopWheels();
+                    stopRollers();
+                    follower.followPath(toPickUp2, speed, false);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    stopWheels();
-                    stopRollers();
-                    follower.followPath(toPickUp2, speed, false);
+                if(!follower.isBusy()) {
+                    startRollersPickup();
+                    follower.followPath(pickUp2, speed, false);
                     setPathState(8);
                 }
                 break;
             case 8:
                 if(!follower.isBusy()) {
-                    startRollersPickup();
-                    reverseWheels();
-                    follower.followPath(pickUp2, speed, false);
+                    stopRollers();
+                    startWheels();
+                    follower.followPath(launch3, speed, true);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if(!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 2) {
-                    reverseRollers();
+                if(pathTimer.getElapsedTimeSeconds() > 2.5 & !follower.isBusy()) {
+                    lowerGate();
+                    startRollersLaunch();
                     setPathState(10);
                 }
                 break;
             case 10:
-                if(pathTimer.getElapsedTime() > 350) {
+                if(pathTimer.getElapsedTimeSeconds() > 1.25) {
+                    raiseGate();
+                    stopWheels();
                     stopRollers();
-                    startWheels();
-                    follower.followPath(launch3, speed, true);
+                    follower.followPath(leave, speed, true);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5 & !follower.isBusy()) {
-                    startRollersLaunch();
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    stopWheels();
-                    stopRollers();
-                    follower.followPath(leave, speed, true);
-                    setPathState(13);
-                }
-                break;
-            case 13:
                 if(!follower.isBusy()) {
                     setPathState(-1);
                 }
@@ -202,6 +209,7 @@ public class GoalAutoBlue extends OpMode {
     @Override
     public void loop() {
         follower.update();
+        updateGate();
         pathUpdate();
     }
 
@@ -209,6 +217,16 @@ public class GoalAutoBlue extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
+    }
+
+    public void updateGate() {
+        if(gateUp) {
+            gate0.setPosition(0);
+            gate1.setPosition(0);
+        } else {
+            gate0.setPosition(1);
+            gate1.setPosition(1);
+        }
     }
 
     public void setPathState(int pState) {
@@ -226,24 +244,22 @@ public class GoalAutoBlue extends OpMode {
         wheel2.setPower(0);
     }
 
-    public void reverseWheels() {
-        wheel1.setPower(-1);
-        wheel2.setPower(1);
+    public void raiseGate() {
+        gateUp = true;
+    }
+
+    public void lowerGate() {
+        gateUp = false;
     }
 
     public void startRollersLaunch() {
         rollers.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rollers.setVelocity(500);
+        rollers.setVelocity(400);
     }
 
     public void startRollersPickup() {
         rollers.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rollers.setPower(0.8);
-    }
-
-    public void reverseRollers() {
-        rollers.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rollers.setPower(-0.23 * (12 / voltageSensor.getVoltage()));
     }
 
     public void stopRollers() {
