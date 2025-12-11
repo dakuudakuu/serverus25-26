@@ -18,7 +18,7 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.025, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.09, 0.01))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01, 0, 0.00006, 0.6, 0.01))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01, 0, 0.00006, 0, 0.01))
             .centripetalScaling(0.0005)
             .forwardZeroPowerAcceleration(-41.15)
             .lateralZeroPowerAcceleration(-67.67)
@@ -40,6 +40,7 @@ public class Constants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE);
 
+
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-5)
             .strafePodX(-5)
@@ -49,7 +50,7 @@ public class Constants {
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 0, 0.6, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

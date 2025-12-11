@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "GoalAutoRed")
-public class GoalAutoRed extends OpMode {
+@Autonomous(name = "Blue12")
+public class Blue12 extends OpMode {
 
     private Timer pathTimer, opmodeTimer;
     private int pathState;
     private RobotActions actions;
-    private RedGoalAutoPaths paths;
+    private BlueGoalAutoPaths paths;
     private DcMotorEx rollers;
     private DcMotorEx wheel1;
     private DcMotorEx wheel2;
@@ -23,161 +23,140 @@ public class GoalAutoRed extends OpMode {
     public void pathUpdate() {
         switch (pathState) {
             case 0:
-                actions.startWheels();
+                actions.startWheelsSlow();
                 paths.follower.followPath(paths.start_launch, true);
                 setPathState(1);
                 break;
             case 1:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5 && !paths.follower.isBusy()) {
+                if (!paths.follower.isBusy()) {
                     actions.lowerGate();
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (pathTimer.getElapsedTime() > 300) {
-                    actions.startRollersLaunch();
+                    actions.startRollersSlowLaunch();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     actions.raiseGate();
                     actions.stopWheels();
-                    actions.stopRollers();
-                    paths.follower.followPath(paths.launch_startPickup1, false);
+                    actions.startRollersPickup();
+                    paths.follower.followPath(paths.launch_pickup1, 0.8, false);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if (!paths.follower.isBusy()) {
-                    actions.startRollersPickup();
-                    paths.follower.followPath(paths.startPickup1_finishPickup1, 0.7, false);
+                if(!paths.follower.isBusy()) {
+                    paths.follower.followPath(paths.pickup1_gatePose, 0.6, true);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if(!paths.follower.isBusy()) {
-                    paths.follower.followPath(paths.finishPickup1_gatePose, 0.6, true);
+                if (pathTimer.getElapsedTime() > 700) {
+                    actions.stopRollers();
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 700) {
-                    actions.stopRollers();
+                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    actions.startWheelsSlow();
+                    paths.follower.followPath(paths.gatePose_launch, true);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    actions.startWheels();
-                    paths.follower.followPath(paths.gatePose_launch, true);
+                if (!paths.follower.isBusy()) {
+                    actions.lowerGate();
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5 && !paths.follower.isBusy()) {
-                    actions.lowerGate();
+                if (pathTimer.getElapsedTime() > 300) {
+                    actions.startRollersSlowLaunch();
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (pathTimer.getElapsedTime() > 300) {
-                    actions.startRollersLaunch();
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    actions.raiseGate();
+                    actions.stopWheels();
+                    actions.startRollersPickup();
+                    paths.follower.followPath(paths.launch_pickup2, 0.8, false);
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    actions.raiseGate();
-                    actions.stopWheels();
-                    actions.stopRollers();
-                    paths.follower.followPath(paths.launch_startPickup2, false);
+                if (!paths.follower.isBusy()) {
+                    actions.startWheelsSlow();
+                    paths.follower.followPath(paths.pickup2_launch, true);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (!paths.follower.isBusy()) {
-                    actions.startRollersPickup();
-                    paths.follower.followPath(paths.startPickup2_finishPickup2, 0.7, false);
+                if (pathTimer.getElapsedTime() > 700) {
+                    actions.stopRollers();
                     setPathState(12);
                 }
                 break;
             case 12:
                 if (!paths.follower.isBusy()) {
-                    actions.startWheels();
-                    paths.follower.followPath(paths.finishPickup2_launch, true);
+                    actions.lowerGate();
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (pathTimer.getElapsedTime() > 700) {
-                    actions.stopRollers();
+                if (pathTimer.getElapsedTime() > 300) {
+                    actions.startRollersSlowLaunch();
                     setPathState(14);
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5 && !paths.follower.isBusy()) {
-                    actions.lowerGate();
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    actions.raiseGate();
+                    actions.stopWheels();
+                    actions.startRollersPickup();
+                    paths.follower.followPath(paths.launch_pickup3, 0.8, true);
                     setPathState(15);
                 }
                 break;
             case 15:
-                if (pathTimer.getElapsedTime() > 300) {
-                    actions.startRollersLaunch();
+                if (!paths.follower.isBusy()) {
+                    actions.startWheelsSlow();
+                    paths.follower.followPath(paths.pickup3_launch, true);
                     setPathState(16);
                 }
                 break;
             case 16:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    actions.raiseGate();
-                    actions.stopWheels();
+                if (pathTimer.getElapsedTime() > 700) {
                     actions.stopRollers();
-                    paths.follower.followPath(paths.launch_startPickup3, true);
                     setPathState(17);
                 }
                 break;
             case 17:
                 if (!paths.follower.isBusy()) {
-                    actions.startRollersPickup();
-                    paths.follower.followPath(paths.startPickup3_finishPickup3, 0.7, false);
+                    actions.lowerGate();
                     setPathState(18);
                 }
                 break;
             case 18:
-                if (!paths.follower.isBusy()) {
-                    actions.startWheels();
-                    paths.follower.followPath(paths.finishPickup3_launch, true);
+                if (pathTimer.getElapsedTime() > 300) {
+                    actions.startRollersSlowLaunch();
                     setPathState(19);
                 }
                 break;
             case 19:
-                if (pathTimer.getElapsedTime() > 700) {
-                    actions.stopRollers();
-                    setPathState(20);
-                }
-                break;
-            case 20:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5 && !paths.follower.isBusy()) {
-                    actions.lowerGate();
-                    setPathState(21);
-                }
-                break;
-            case 21:
-                if (pathTimer.getElapsedTime() > 300) {
-                    actions.startRollersLaunch();
-                    setPathState(22);
-                }
-                break;
-            case 22:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.stopRollers();
                     paths.follower.followPath(paths.launch_finishPose, true);
-                    setPathState(23);
+                    setPathState(20);
                 }
                 break;
-            case 23:
+            case 20:
                 if (!paths.follower.isBusy()) {
                     setPathState(-1);
                 }
@@ -209,7 +188,7 @@ public class GoalAutoRed extends OpMode {
         gate1.setDirection(Servo.Direction.REVERSE);
 
         actions = new RobotActions(hardwareMap, rollers, wheel1, wheel2, gate0, gate1);
-        paths = new RedGoalAutoPaths(hardwareMap);
+        paths = new BlueGoalAutoPaths(hardwareMap);
         paths.buildPaths();
     }
 
@@ -223,6 +202,7 @@ public class GoalAutoRed extends OpMode {
     public void loop() {
         paths.follower.update();
         actions.setWheelPID();
+        actions.setRollerPID();
         actions.updateGate();
         pathUpdate();
     }

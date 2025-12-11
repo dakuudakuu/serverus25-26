@@ -35,13 +35,18 @@ public class RobotActions {
     public void raiseGate() {gateUp = true;}
     public void lowerGate() {gateUp = false;}
 
-    public void startRollersLaunch() {rollers.setVelocity(1000);}
-    public void startRollersPickup() {rollers.setPower(0.9);}
+    public void startRollersFastLaunch() {rollers.setVelocity(1400);}
+    public void startRollersSlowLaunch() {rollers.setVelocity(1100);}
+    public void startRollersPickup() {rollers.setPower(1);}
     public void stopRollers() {rollers.setPower(0);}
 
-    public void startWheels() {
-        wheel1.setVelocity(1725);
-        wheel2.setVelocity(-1725);
+    public void startWheelsFast() {
+        wheel1.setVelocity(1680);
+        wheel2.setVelocity(-1680);
+    }
+    public void startWheelsSlow() {
+        wheel1.setVelocity(1720);
+        wheel2.setVelocity(-1720);
     }
     public void stopWheels() {
         wheel1.setPower(0);
@@ -52,6 +57,11 @@ public class RobotActions {
         PIDFCoefficients wheelPID = new PIDFCoefficients(20, 0, 5, 13 * (12 / getBatteryVoltage()));
         wheel1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, wheelPID);
         wheel2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, wheelPID);
+    }
+
+    public void setRollerPID() {
+        PIDFCoefficients roller = new PIDFCoefficients(10, 0, 5, 15 * (12 / getBatteryVoltage()));
+        rollers.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, roller);
     }
 
     private double getBatteryVoltage() {

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -26,13 +27,12 @@ public class MainTeleOp extends OpMode {
     private Servo gate1;
     private final Pose launchPose = PoseStorage.launchPose;
     private final Pose basePose = PoseStorage.basePose;
-    private int wheelVelocity = 1725;
+    private int wheelVelocityNormal = 1680;
+    private int wheelVelocityMotif = 1855;
+    private int wheelVelocityHigh = 2420;
     public double speed;
     public boolean driverMoved;
-
-    private final PIDF xHold = new PIDF(new PIDFCoefficients(0.1, 0, 0.01, 0));
-    private final PIDF yHold = new PIDF(new PIDFCoefficients(0.1, 0, 0.01, 0));
-    private final PIDF hHold = new PIDF(new PIDFCoefficients(1, 0, 0.1, 0));
+    public boolean raised = false;
 
     enum DriveState { TELEOP, PATHING, PID_HOLD }
     DriveState driveState = DriveState.TELEOP;
@@ -63,6 +63,7 @@ public class MainTeleOp extends OpMode {
         gate1.setDirection(Servo.Direction.REVERSE);
 
         slides = hardwareMap.get(DcMotor.class, "slides");
+        slides.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     @Override
@@ -81,16 +82,11 @@ public class MainTeleOp extends OpMode {
         setDriveVariables();
         setDrive();
         setWheelPID();
+        setRollerPID();
         moveBalls();
         moveSlides();
-        updateTelemetry();
-    }
-
-    public void updateTelemetry() {
-        double v = wheel1.getVelocity();
-        telemetry.addData("Target", wheelVelocity);
-        telemetry.addData("Velocity", v);
-        telemetry.addData("Error", wheelVelocity - v);
+        telemetry.addData("Current", String.valueOf(rollers.getVelocity()));
+        telemetry.addData("Target", "1500");
         telemetry.update();
     }
 
@@ -109,15 +105,10 @@ public class MainTeleOp extends OpMode {
     }
 
     private void enterTeleopDrive() {
-        xHold.reset();
-        yHold.reset();
-        hHold.reset();
         follower.startTeleopDrive();
     }
 
     void setDrive() {
-        Pose current = follower.getPose();
-
         double forwardRaw = -gamepad1.left_stick_y;
         double strafeRaw = -gamepad1.left_stick_x;
         double turnRaw = -gamepad1.right_stick_x;
@@ -154,13 +145,15 @@ public class MainTeleOp extends OpMode {
         }
 
         if (driveState == DriveState.PID_HOLD && targetPose != null) {
-            double dx = targetPose.getX() - current.getX();
-            double dy = targetPose.getY() - current.getY();
-            double headErr = normDelta(targetPose.getHeading() - current.getHeading());
-            double xPow = xHold.calculate(dx);
-            double yPow = yHold.calculate(dy);
-            double tPow = hHold.calculate(headErr);
-            follower.setTeleOpDrive(xPow, yPow, tPow, false, PoseStorage.correctHeading);
+            Pose currentPose = follower.getPose();
+            double dist = Math.hypot(targetPose.getX() - currentPose.getX(), targetPose.getY() - currentPose.getY());
+            if(!follower.isBusy() && dist > PATH_MIN_DIST) {
+                PathChain chain = follower.pathBuilder()
+                        .addPath(new BezierLine(follower.getPose(), targetPose))
+                        .setLinearHeadingInterpolation(follower.getPose().getHeading(), targetPose.getHeading())
+                        .build();
+                follower.followPath(chain, true);
+            }
         }
     }
 
@@ -171,8 +164,8 @@ public class MainTeleOp extends OpMode {
             targetPose = p;
             PathChain chain = follower.pathBuilder()
                     .addPath(new BezierLine(follower.getPose(), p))
-                    .setLinearHeadingInterpolation(follower.getPose().getHeading(), p.getHeading())
-                    .setGlobalDeceleration(0.2)
+                    .setConstantHeadingInterpolation(p.getHeading())
+                    .setGlobalDeceleration(0.5)
                     .build();
             follower.followPath(chain, false);
             driveState = DriveState.PATHING;
@@ -182,40 +175,70 @@ public class MainTeleOp extends OpMode {
         }
     }
 
-    private static double normDelta(double angle) {
-        while (angle >  Math.PI) angle -= 2.0 * Math.PI;
-        while (angle < -Math.PI) angle += 2.0 * Math.PI;
-        return angle;
-    }
-
     private void moveBalls() {
-        if(gamepad2.a) {
-            rollers.setPower(0.9);
-            gate0.setPosition(0.82);
-            gate1.setPosition(0.82);
-        } else if(gamepad2.y) {
-            rollers.setVelocity(600);
+        if (gamepad2.dpad_right) {
+            wheel1.setVelocity(wheelVelocityNormal);
+            wheel2.setVelocity(-wheelVelocityNormal);
             gate0.setPosition(1);
             gate1.setPosition(1);
-        } else {
-            rollers.setPower(0);
-            gate0.setPosition(0.82);
-            gate1.setPosition(0.82);
-        } if (gamepad2.dpad_up) {
-            wheel1.setVelocity(wheelVelocity);
-            wheel2.setVelocity(-wheelVelocity);
+            if(gamepad2.a) {
+                rollers.setVelocity(1500);
+            } else {
+                rollers.setPower(0);
+            }
+        } else if(gamepad2.dpad_up) {
+            wheel1.setVelocity(wheelVelocityMotif);
+            wheel2.setVelocity(-wheelVelocityMotif);
+            gate0.setPosition(1);
+            gate1.setPosition(1);
+            if(gamepad2.a) {
+                rollers.setVelocity(600);
+            } else {
+                rollers.setPower(0);
+            }
+        } else if(gamepad2.dpad_left) {
+            wheel1.setVelocity(wheelVelocityHigh);
+            wheel2.setVelocity(-wheelVelocityHigh);
+            gate0.setPosition(1);
+            gate1.setPosition(1);
+            if(gamepad2.a) {
+                rollers.setVelocity(600);
+            } else {
+                rollers.setPower(0);
+            }
         } else {
             wheel1.setPower(0);
             wheel2.setPower(0);
+            gate0.setPosition(0.82);
+            gate1.setPosition(0.82);
+            if(gamepad2.a) {
+                rollers.setPower(0.9);
+            } else if (gamepad2.x) {
+                rollers.setPower(-0.5);
+            } else {
+                rollers.setPower(0);
+            }
         }
     }
 
     private void moveSlides() {
         if(gamepad2.left_bumper) {
-            slides.setPower(-0.7);
+            raised = true;
         } else if(gamepad2.right_bumper) {
-            slides.setPower(0.7);
-        } else {
+            raised = false;
+            slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            slides.setPower(-0.4);
+        }
+
+        if(Math.abs(slides.getCurrentPosition() - 8000) > 50 && raised) {
+            slides.setTargetPosition(8000);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(1);
+        } else if(raised) {
+            slides.setTargetPosition(8000);
+            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slides.setPower(0.4);
+        } else if (!gamepad2.right_bumper) {
             slides.setPower(0);
         }
     }
@@ -224,6 +247,11 @@ public class MainTeleOp extends OpMode {
         PIDFCoefficients wheelPID = new PIDFCoefficients(20, 0, 5, 13 * (12 / getBatteryVoltage()));
         wheel1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, wheelPID);
         wheel2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, wheelPID);
+    }
+
+    public void setRollerPID() {
+        PIDFCoefficients roller = new PIDFCoefficients(10, 0, 5, 15 * (12 / getBatteryVoltage()));
+        rollers.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, roller);
     }
 
     private double getBatteryVoltage() {
@@ -235,23 +263,5 @@ public class MainTeleOp extends OpMode {
             }
         }
         return result;
-    }
-
-    private static class PIDF {
-        private final PIDFCoefficients coeffs;
-        private double lastError = 0;
-        private double i = 0;
-
-        PIDF(PIDFCoefficients c) { coeffs = c; }
-
-        double calculate(double error) {
-            double p = error * coeffs.p;
-            i += error * coeffs.i * 0.02;
-            double d = (error - lastError) * coeffs.d * 50.0;
-            double f = coeffs.f * Math.signum(error);
-            lastError = error;
-            return p + i + d + f;
-        }
-        void reset() { lastError = 0; i = 0; }
     }
 }
