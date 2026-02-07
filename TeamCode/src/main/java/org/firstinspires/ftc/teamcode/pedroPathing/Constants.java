@@ -17,19 +17,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.025, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.09, 0.01))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01, 0, 0.00006, 0, 0.01))
+            .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.08, 0.01))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.02, 0, 0.00006, 0, 0.01))
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.01, 0, 0.00006, 0, 0.01))
+            .useSecondaryDrivePIDF(true)
             .centripetalScaling(0.0005)
-            .forwardZeroPowerAcceleration(-41.15)
-            .lateralZeroPowerAcceleration(-67.67)
-            .mass(5);
+            .forwardZeroPowerAcceleration(-26)
+            .lateralZeroPowerAcceleration(-51)
+            .mass(13.7);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .useBrakeModeInTeleOp(true)
-            .xVelocity(85.96483894408217)
-            .yVelocity(71.14309572234868)
-            .useVoltageCompensation(true)
-            .nominalVoltage(12)
+            .xVelocity(78)
+            .yVelocity(58)
             .maxPower(1)
             .rightFrontMotorName("frontRight")
             .rightRearMotorName("backRight")
@@ -40,7 +40,6 @@ public class Constants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE);
 
-
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-5)
             .strafePodX(-5)
@@ -50,7 +49,7 @@ public class Constants {
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 0, 0.6, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 0, 1, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

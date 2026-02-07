@@ -12,22 +12,23 @@ public class BlueGoalAutoPaths {
     public final Follower follower;
 
     public final Pose startPose = new Pose(34, 134, Math.toRadians(270));
-    public final Pose launchPose = new Pose(54, 107, Math.toRadians(328));
-    public final Pose pickup1 = new Pose(24, 85, Math.toRadians(180));
-    public final Pose pickup1Control = new Pose(74, 75, Math.toRadians(180));
-    public final Pose gatePose = new Pose(16, 74, Math.toRadians(180));
-    public final Pose gateControlPoint = new Pose(29, 78, Math.toRadians(180));
-    public final Pose gatePickup = new Pose(12, 57, Math.toRadians(150));
-    public final Pose gatePickupControl = new Pose(54, 47, Math.toRadians(150));
-    public final Pose pickup2 = new Pose(24, 61, Math.toRadians(180));
-    public final Pose pickup2Control = new Pose(74, 51, Math.toRadians(180));
-    public final Pose controlPoint = new Pose (54, 75, Math.toRadians(75));
-    public final Pose pickup3 = new Pose(24, 34, Math.toRadians(180));
-    public final Pose pickup3Control = new Pose(74, 24, Math.toRadians(180));
-    public final Pose finishPose = new Pose(44, 76, Math.toRadians(328));
-    public final Pose basePose = new Pose(106.5, 32, Math.toRadians(90));
+    public final Pose launchPose = new Pose(57, 83, Math.toRadians(312));
+    public final Pose pickup1 = new Pose(24, 88, Math.toRadians(180));
+    public final Pose pickup1Control = new Pose(74, 78, Math.toRadians(180));
+    public final Pose gatePose = new Pose(18, 73, Math.toRadians(180));
+    public final Pose gateControlPoint = new Pose(29, 76, Math.toRadians(180));
+    public final Pose gatePickup = new Pose(12, 60, Math.toRadians(147));
+    public final Pose gatePickupControl = new Pose(54, 50, Math.toRadians(147));
+    public final Pose pickup2 = new Pose(26, 61, Math.toRadians(180));
+    public final Pose pickup2Control = new Pose(76, 51, Math.toRadians(180));
+    public final Pose controlPoint = new Pose (54, 75, Math.toRadians(105));
+    public final Pose pickup3 = new Pose(24, 38, Math.toRadians(180));
+    public final Pose pickup3Control = new Pose(74, 28, Math.toRadians(180));
+    public final Pose finishPose = new Pose(44, 80, Math.toRadians(317));
+    public final Pose basePose = new Pose(106.5, 32, Math.toRadians(180));
+    public final Pose launchPoseFar = new Pose(60, 22, Math.toRadians(293));
 
-    public final double correctHeading = Math.toRadians(180);
+    public final double correctHeading = Math.toDegrees(180);
 
     public PathChain start_launch, launch_pickup1, pickup1_launch, pickup1_gatePose, gatePose_launch, launch_gatePickup, gatePickup_launch, launch_pickup2, pickup2_launch, launch_pickup3, pickup3_launch, launch_finishPose;
 
