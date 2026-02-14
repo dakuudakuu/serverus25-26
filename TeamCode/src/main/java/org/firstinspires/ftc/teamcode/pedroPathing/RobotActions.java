@@ -38,8 +38,8 @@ public class RobotActions {
     public void lowerGate() {gateUp = false;}
 
     public void startRollersFastLaunch() {
-        rollers.setVelocity(1500);
-        transfer.setVelocity(1400);
+        rollers.setVelocity(1400);
+        transfer.setVelocity(1500);
     }
 
     public void startRollersPickup() {
@@ -52,8 +52,8 @@ public class RobotActions {
     }
 
     public void startWheelsFast() {
-        wheel1.setVelocity(1730);
-        wheel2.setVelocity(-1730);
+        wheel1.setVelocity(1715);
+        wheel2.setVelocity(-1715);
     }
 
     public void stopWheels() {

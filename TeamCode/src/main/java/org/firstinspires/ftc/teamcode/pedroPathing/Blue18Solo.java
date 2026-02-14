@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.List;
 
-@Autonomous(name = "Red18")
-public class Red18 extends OpMode {
+@Autonomous(name = "Red18Solo")
+public class Blue18Solo extends OpMode {
     private Timer pathTimer, opmodeTimer;
     private int pathState;
     private RobotActions actions;
-    private RedGoalAutoPaths paths;
+    private BlueGoalAutoPaths paths;
     private DcMotorEx rollers;
     private DcMotorEx wheel1;
     private DcMotorEx wheel2;
@@ -55,7 +55,7 @@ public class Red18 extends OpMode {
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup2Gate, false);
+                    paths.follower.followPath(paths.launch_pickup2, false);
                     setPathState(4);
                 }
                 break;
@@ -63,7 +63,7 @@ public class Red18 extends OpMode {
                 if(!paths.follower.isBusy()) {
                     actions.startWheelsFast();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
-                    paths.follower.followPath(paths.pickup2Gate_launch, true);
+                    paths.follower.followPath(paths.pickup2_launch, true);
                     setPathState(5);
                 }
                 break;
@@ -126,7 +126,7 @@ public class Red18 extends OpMode {
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup1_gate, true);
+                    paths.follower.followPath(paths.launch_pickup3, true);
                     setPathState(13);
                 }
                 break;
@@ -134,7 +134,7 @@ public class Red18 extends OpMode {
                 if (!paths.follower.isBusy()) {
                     actions.startWheelsFast();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
-                    paths.follower.followPath(paths.pickup1Gate_launch, true);
+                    paths.follower.followPath(paths.pickup3_launch, true);
                     setPathState(14);
                 }
                 break;
@@ -197,7 +197,7 @@ public class Red18 extends OpMode {
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup3, true);
+                    paths.follower.followPath(paths.launch_pickup1, true);
                     setPathState(22);
                 }
                 break;
@@ -205,7 +205,7 @@ public class Red18 extends OpMode {
                 if (!paths.follower.isBusy()) {
                     actions.startWheelsFast();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
-                    paths.follower.followPath(paths.pickup3_launch, true);
+                    paths.follower.followPath(paths.pickup1_launch, true);
                     setPathState(23);
                 }
                 break;
@@ -275,7 +275,7 @@ public class Red18 extends OpMode {
         transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         actions = new RobotActions(hardwareMap, rollers, transfer, wheel1, wheel2, gate0, gate1);
-        paths = new RedGoalAutoPaths(hardwareMap);
+        paths = new BlueGoalAutoPaths(hardwareMap);
         paths.buildPaths();
 
         allHubs = hardwareMap.getAll(LynxModule.class);

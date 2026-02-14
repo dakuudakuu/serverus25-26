@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -8,9 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Red15Gates")
-public class Red15Gates extends OpMode {
+import java.util.List;
 
+@Autonomous(name = "Red18Solo")
+public class Red18Solo extends OpMode {
     private Timer pathTimer, opmodeTimer;
     private int pathState;
     private RobotActions actions;
@@ -22,6 +24,8 @@ public class Red15Gates extends OpMode {
     private Servo gate0;
     private Servo gate1;
     private RevBlinkinLedDriver blink;
+    private Boolean updatePIDF = false;
+    List<LynxModule> allHubs;
 
     public void pathUpdate() {
         switch (pathState) {
@@ -39,17 +43,19 @@ public class Red15Gates extends OpMode {
                 break;
             case 2:
                 if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
                     actions.startRollersFastLaunch();
                     setPathState(3);
                 }
                 break;
             case 3:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup2, 0.8, true);
+                    paths.follower.followPath(paths.launch_pickup2, false);
                     setPathState(4);
                 }
                 break;
@@ -75,22 +81,24 @@ public class Red15Gates extends OpMode {
                 break;
             case 7:
                 if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
                     actions.startRollersFastLaunch();
                     setPathState(8);
                 }
                 break;
             case 8:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_gatePickup, 0.9, false);
+                    paths.follower.followPath(paths.launch_gatePickup, true);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.2) {
+                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     actions.startWheelsFast();
                     actions.stopRollers();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
@@ -106,17 +114,19 @@ public class Red15Gates extends OpMode {
                 break;
             case 11:
                 if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
                     actions.startRollersFastLaunch();
                     setPathState(12);
                 }
                 break;
             case 12:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup1_gate, 0.8, true);
+                    paths.follower.followPath(paths.launch_pickup3, true);
                     setPathState(13);
                 }
                 break;
@@ -124,7 +134,7 @@ public class Red15Gates extends OpMode {
                 if (!paths.follower.isBusy()) {
                     actions.startWheelsFast();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
-                    paths.follower.followPath(paths.gatePose_launch, true);
+                    paths.follower.followPath(paths.pickup3_launch, true);
                     setPathState(14);
                 }
                 break;
@@ -142,57 +152,94 @@ public class Red15Gates extends OpMode {
                 break;
             case 16:
                 if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
                     actions.startRollersFastLaunch();
                     setPathState(17);
                 }
                 break;
             case 17:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.startRollersPickup();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
-                    paths.follower.followPath(paths.launch_pickup3_gate, true);
+                    paths.follower.followPath(paths.launch_gatePickup, true);
                     setPathState(18);
                 }
                 break;
             case 18:
-                if (!paths.follower.isBusy()) {
+                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     actions.startWheelsFast();
+                    actions.stopRollers();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
-                    paths.follower.followPath(paths.gatePose_launch, true);
+                    paths.follower.followPath(paths.gatePickup_launch, true);
                     setPathState(19);
                 }
                 break;
             case 19:
-                if (pathTimer.getElapsedTime() > 700) {
-                    actions.stopRollers();
+                if (!paths.follower.isBusy()) {
+                    actions.lowerGate();
                     setPathState(20);
                 }
                 break;
             case 20:
-                if (!paths.follower.isBusy()) {
-                    actions.lowerGate();
+                if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
+                    actions.startRollersFastLaunch();
                     setPathState(21);
                 }
                 break;
             case 21:
-                if (pathTimer.getElapsedTime() > 200) {
-                    actions.startRollersFastLaunch();
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
+                    actions.raiseGate();
+                    actions.stopWheels();
+                    actions.startRollersPickup();
+                    blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
+                    paths.follower.followPath(paths.launch_pickup1, true);
                     setPathState(22);
                 }
                 break;
             case 22:
+                if (!paths.follower.isBusy()) {
+                    actions.startWheelsFast();
+                    blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
+                    paths.follower.followPath(paths.pickup1_launch, true);
+                    setPathState(23);
+                }
+                break;
+            case 23:
+                if (pathTimer.getElapsedTime() > 700) {
+                    actions.stopRollers();
+                    setPathState(24);
+                }
+                break;
+            case 24:
+                if (!paths.follower.isBusy()) {
+                    actions.lowerGate();
+                    setPathState(25);
+                }
+                break;
+            case 25:
+                if (pathTimer.getElapsedTime() > 200) {
+                    updatePIDF = true;
+                    actions.startRollersFastLaunch();
+                    setPathState(26);
+                }
+                break;
+            case 26:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    updatePIDF = false;
                     actions.raiseGate();
                     actions.stopWheels();
                     actions.stopRollers();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_RAINBOW_PALETTE);
                     paths.follower.followPath(paths.launch_finishPose, true);
-                    setPathState(23);
+                    setPathState(27);
                 }
                 break;
-            case 23:
+            case 27:
                 if (!paths.follower.isBusy()) {
                     setPathState(-1);
                 }
@@ -230,6 +277,11 @@ public class Red15Gates extends OpMode {
         actions = new RobotActions(hardwareMap, rollers, transfer, wheel1, wheel2, gate0, gate1);
         paths = new RedGoalAutoPaths(hardwareMap);
         paths.buildPaths();
+
+        allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
     }
 
     @Override
@@ -240,12 +292,18 @@ public class Red15Gates extends OpMode {
 
     @Override
     public void loop() {
-        paths.follower.update();
-        actions.setWheelPID();
-        actions.setRollerPID();
-        actions.setTransferPID();
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
+        if(updatePIDF) {
+            actions.setTransferPID();
+            actions.setRollerPID();
+            actions.setWheelPID();
+        }
         actions.updateGate();
         pathUpdate();
+        paths.follower.update();
+        telemetry.update();
     }
 
     public void setPathState(int pState) {
@@ -258,7 +316,6 @@ public class Red15Gates extends OpMode {
         PoseStorage.endingPose = paths.follower.getPose();
         PoseStorage.correctHeading = paths.correctHeading;
         PoseStorage.launchPose = paths.launchPose;
-        PoseStorage.basePose = paths.basePose;
         PoseStorage.launchPoseFar = paths.launchPoseFar;
     }
 }

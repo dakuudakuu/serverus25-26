@@ -14,8 +14,7 @@ public class RedGoalAutoPaths {
     public final Pose startPose = new Pose(110, 134, Math.toRadians(270));
     public final Pose launchPose = new Pose(87, 83, Math.toRadians(228));
     public final Pose pickup1 = new Pose(120, 82, Math.toRadians(0));
-    public final Pose pickup1Gate = new Pose(125, 77, Math.toRadians(0));
-    public final Pose gatePose = new Pose(126, 73, Math.toRadians(0));
+    public final Pose pickup1Gate = new Pose(125, 75, Math.toRadians(0));
     public final Pose gateControlPoint = new Pose(115, 76, Math.toRadians(0));
     public final Pose gatePickup = new Pose(135, 57, Math.toRadians(33));
     public final Pose gatePickupControl = new Pose(90, 60, Math.toRadians(33));
@@ -26,12 +25,11 @@ public class RedGoalAutoPaths {
     public final Pose pickup3 = new Pose(120, 34, Math.toRadians(0));
     public final Pose pickup3Control = new Pose(70, 24, Math.toRadians(0));
     public final Pose finishPose = new Pose(95, 75, Math.toRadians(228));
-    public final Pose basePose = new Pose(37.5, 32, Math.toRadians(0));
     public final Pose launchPoseFar = new Pose(84, 22, Math.toRadians(247));
 
     public final double correctHeading = Math.toDegrees(0);
 
-    public PathChain start_launch, launch_pickup1, launch_pickup1_gate, pickup1Gate_launch, pickup1_launch, pickup1_gatePose, gatePose_launch, launch_gatePickup, gatePickup_launch, launch_pickup2, pickup2_launch, launch_pickup3, launch_pickup3_gate, pickup3_launch, launch_finishPose;
+    public PathChain start_launch, launch_pickup1, launch_pickup1_gate, pickup1Gate_launch, pickup1_launch, launch_gatePickup, gatePickup_launch, launch_pickup2, pickup2_launch, launch_pickup2Gate, pickup2Gate_launch, launch_pickup3, pickup3_launch, launch_finishPose;
 
     public RedGoalAutoPaths(HardwareMap hardwareMap) {
         follower = Constants.createFollower(hardwareMap);
@@ -51,7 +49,7 @@ public class RedGoalAutoPaths {
         launch_pickup1_gate = follower.pathBuilder()
                 .addPath(new BezierLine(launchPose, pickup1))
                 .setConstantHeadingInterpolation(pickup1.getHeading())
-                .addPath(new BezierLine(pickup1, pickup1Gate))
+                .addPath(new BezierCurve(pickup1, gateControlPoint, pickup1Gate))
                 .setConstantHeadingInterpolation(pickup1.getHeading())
                 .setGlobalDeceleration(2)
                 .build();
@@ -62,14 +60,6 @@ public class RedGoalAutoPaths {
         pickup1_launch = follower.pathBuilder()
                 .addPath(new BezierLine(pickup1, launchPose))
                 .setLinearHeadingInterpolation(pickup1.getHeading(), launchPose.getHeading())
-                .build();
-        pickup1_gatePose = follower.pathBuilder()
-                .addPath(new BezierCurve(pickup1, gateControlPoint, gatePose))
-                .setLinearHeadingInterpolation(pickup1.getHeading(), gatePose.getHeading())
-                .build();
-        gatePose_launch = follower.pathBuilder()
-                .addPath(new BezierLine(gatePose, launchPose))
-                .setLinearHeadingInterpolation(gatePose.getHeading(), launchPose.getHeading())
                 .build();
         launch_gatePickup = follower.pathBuilder()
                 .addPath(new BezierCurve(launchPose, gatePickupControl, gatePickup))
@@ -82,23 +72,25 @@ public class RedGoalAutoPaths {
         launch_pickup2 = follower.pathBuilder()
                 .addPath(new BezierCurve(launchPose, pickup2Control, pickup2))
                 .setConstantHeadingInterpolation(pickup2.getHeading())
+                .build();
+        pickup2_launch = follower.pathBuilder()
+                .addPath(new BezierCurve(pickup2, controlPoint, launchPose))
+                .setLinearHeadingInterpolation(pickup2.getHeading(), launchPose.getHeading())
+                .build();
+        launch_pickup2Gate = follower.pathBuilder()
+                .addPath(new BezierCurve(launchPose, pickup2Control, pickup2))
+                .setConstantHeadingInterpolation(pickup2.getHeading())
                 .addPath(new BezierLine(pickup2, pickup2Gate))
                 .setConstantHeadingInterpolation(pickup2.getHeading())
                 .setGlobalDeceleration(2)
                 .build();
-        pickup2_launch = follower.pathBuilder()
+        pickup2Gate_launch = follower.pathBuilder()
                 .addPath(new BezierCurve(pickup2Gate, controlPoint, launchPose))
                 .setLinearHeadingInterpolation(pickup2.getHeading(), launchPose.getHeading())
                 .build();
         launch_pickup3 = follower.pathBuilder()
                 .addPath(new BezierCurve(launchPose, pickup3Control, pickup3))
                 .setConstantHeadingInterpolation(pickup3.getHeading())
-                .build();
-        launch_pickup3_gate = follower.pathBuilder()
-                .addPath(new BezierCurve(launchPose, pickup3Control, pickup3))
-                .setConstantHeadingInterpolation(pickup1.getHeading())
-                .addPath(new BezierCurve(pickup3, gateControlPoint, gatePose))
-                .setConstantHeadingInterpolation(gatePose.getHeading())
                 .build();
         pickup3_launch = follower.pathBuilder()
                 .addPath(new BezierLine(pickup3, launchPose))

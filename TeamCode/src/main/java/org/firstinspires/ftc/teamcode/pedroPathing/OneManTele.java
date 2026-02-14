@@ -18,8 +18,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import java.util.List;
 
-@TeleOp(name = "MainTeleOp")
-public class MainTeleOp extends OpMode {
+@TeleOp(name = "OneManTele")
+public class OneManTele extends OpMode {
     private Follower follower;
     private Timer opModeTimer;
     private boolean isRobotCentric = false;
@@ -126,7 +126,7 @@ public class MainTeleOp extends OpMode {
             setRollerPID();
             setWheelPID();
         }
-        if(driveState != MainTeleOp.DriveState.TELEOP) {
+        if(driveState != OneManTele.DriveState.TELEOP) {
             follower.update();
         } else {
             follower.updatePose();
@@ -211,12 +211,12 @@ public class MainTeleOp extends OpMode {
     }
 
     private void moveBalls() {
-        if (gamepad2.dpad_right) {
+        if (gamepad1.right_bumper) {
             wheel1.setVelocity(wheelVelocityNormal);
             wheel2.setVelocity(-wheelVelocityNormal);
             gate0.setPosition(1);
             gate1.setPosition(1);
-            if (gamepad2.a) {
+            if (gamepad1.left_bumper) {
                 rollers.setVelocity(1400);
                 transfer.setVelocity(1500);
                 updatePIDF = true;
@@ -225,12 +225,12 @@ public class MainTeleOp extends OpMode {
                 transfer.setVelocity(0);
                 updatePIDF = false;
             }
-        } else if (gamepad2.dpad_left) {
+        } else if (gamepad1.right_trigger > 0.5) {
             wheel1.setVelocity(wheelVelocityHigh);
             wheel2.setVelocity(-wheelVelocityHigh);
             gate0.setPosition(1);
             gate1.setPosition(1);
-            if (gamepad2.dpad_right) {
+            if (gamepad1.left_bumper) {
                 rollers.setVelocity(850);
                 transfer.setVelocity(950);
                 updatePIDF = true;
@@ -246,9 +246,9 @@ public class MainTeleOp extends OpMode {
             gate0.setPosition(0.82);
             gate1.setPosition(0.82);
             transfer.setVelocity(0);
-            if (gamepad2.a) {
+            if (gamepad1.left_bumper) {
                 rollers.setPower(0.9);
-            } else if (gamepad2.x) {
+            } else if (gamepad1.left_trigger > 0.5) {
                 rollers.setPower(-800);
             } else {
                 rollers.setPower(0);

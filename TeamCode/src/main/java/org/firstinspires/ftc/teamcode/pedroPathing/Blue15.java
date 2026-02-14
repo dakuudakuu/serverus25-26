@@ -258,7 +258,6 @@ public class Blue15 extends OpMode {
         PoseStorage.endingPose = paths.follower.getPose();
         PoseStorage.correctHeading = paths.correctHeading;
         PoseStorage.launchPose = paths.launchPose;
-        PoseStorage.basePose = paths.basePose;
         PoseStorage.launchPoseFar = paths.launchPoseFar;
     }
 }
