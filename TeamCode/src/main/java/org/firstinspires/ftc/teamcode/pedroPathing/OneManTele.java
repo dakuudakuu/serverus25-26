@@ -38,7 +38,7 @@ public class OneManTele extends OpMode {
     private final Pose gatePose = PoseStorage.gatePose;
     private final Pose launchPoseFar = PoseStorage.launchPoseFar;
     private int wheelVelocityNormal = 1715;
-    private int wheelVelocityHigh = 2165;
+    private int wheelVelocityHigh = 2040;
     public boolean driverMoved;
     RevBlinkinLedDriver blink;
     double flPrev = 0, blPrev = 0, frPrev = 0, brPrev = 0;
@@ -231,8 +231,8 @@ public class OneManTele extends OpMode {
             gate0.setPosition(1);
             gate1.setPosition(1);
             if (gamepad1.left_bumper) {
-                rollers.setVelocity(850);
-                transfer.setVelocity(950);
+                rollers.setVelocity(1300);
+                transfer.setVelocity(1400);
                 updatePIDF = true;
             } else {
                 rollers.setPower(0);

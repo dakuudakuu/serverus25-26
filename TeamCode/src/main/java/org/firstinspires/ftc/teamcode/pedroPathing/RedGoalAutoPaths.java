@@ -12,8 +12,8 @@ public class RedGoalAutoPaths {
     public final Follower follower;
 
     public final Pose startPose = new Pose(110, 134, Math.toRadians(270));
-    public final Pose launchPose = new Pose(87, 83, Math.toRadians(228));
-    public final Pose pickup1 = new Pose(120, 82, Math.toRadians(0));
+    public final Pose launchPose = new Pose(89, 85, Math.toRadians(230));
+    public final Pose pickup1 = new Pose(120, 79, Math.toRadians(0));
     public final Pose pickup1Gate = new Pose(125, 75, Math.toRadians(0));
     public final Pose gateControlPoint = new Pose(115, 76, Math.toRadians(0));
     public final Pose gatePickup = new Pose(135, 57, Math.toRadians(33));

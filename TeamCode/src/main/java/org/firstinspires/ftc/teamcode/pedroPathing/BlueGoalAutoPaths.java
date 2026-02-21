@@ -12,11 +12,11 @@ public class BlueGoalAutoPaths {
     public final Follower follower;
 
     public final Pose startPose = new Pose(34, 134, Math.toRadians(270));
-    public final Pose launchPose = new Pose(57, 83, Math.toRadians(314));
+    public final Pose launchPose = new Pose(55, 81, Math.toRadians(312));
     public final Pose pickup1 = new Pose(26, 87, Math.toRadians(180));
     public final Pose pickup1Gate = new Pose(21, 77, Math.toRadians(180));
     public final Pose gateControlPoint = new Pose(29, 78, Math.toRadians(180));
-    public final Pose gatePickup = new Pose(11, 60, Math.toRadians(147));
+    public final Pose gatePickup = new Pose(11, 59, Math.toRadians(147));
     public final Pose gatePickupControl = new Pose(54, 62, Math.toRadians(147));
     public final Pose pickup2 = new Pose(26, 62, Math.toRadians(180));
     public final Pose pickup2Gate = new Pose(20, 65, Math.toRadians(180));

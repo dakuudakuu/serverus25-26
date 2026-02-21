@@ -98,7 +98,7 @@ public class Red18Solo extends OpMode {
                 }
                 break;
             case 9:
-                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.25) {
                     actions.startWheelsFast();
                     actions.stopRollers();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
@@ -169,7 +169,7 @@ public class Red18Solo extends OpMode {
                 }
                 break;
             case 18:
-                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+                if (!paths.follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.25) {
                     actions.startWheelsFast();
                     actions.stopRollers();
                     blink.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);

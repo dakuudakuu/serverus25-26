@@ -52,8 +52,8 @@ public class RobotActions {
     }
 
     public void startWheelsFast() {
-        wheel1.setVelocity(1715);
-        wheel2.setVelocity(-1715);
+        wheel1.setVelocity(1725);
+        wheel2.setVelocity(-1725);
     }
 
     public void stopWheels() {
